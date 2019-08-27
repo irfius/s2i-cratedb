@@ -1,3 +1,3 @@
 .gradle
-crate-ce/data
-crate-ce/logs
+crate-ce/data/*
+crate-ce/logs/*
