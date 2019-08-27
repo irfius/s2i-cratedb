@@ -1,0 +1,20 @@
+#!/bin/bash
+
+echo "---> Assemble START"
+
+# If the superset0281 assemble script is executed with '-h' flag, print the usage.
+if [[ "$1" == "-h" ]]; then
+	exec /usr/libexec/s2i/usage
+fi
+
+# Restore artifacts from the previous build (if they exist).
+if [ "$(ls /tmp/artifacts/ 2>/dev/null)" ]; then
+  echo "---> Restoring build artifacts..."
+  mv /tmp/artifacts/* /etc/crate-artifacts
+fi
+
+# move the application source
+echo "---> Building and installing application from source..."
+mv /tmp/src/* /app/crate
+
+echo "---> Assemble END"

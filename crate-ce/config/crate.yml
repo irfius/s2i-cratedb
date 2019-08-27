@@ -93,9 +93,10 @@ auth:
 # implementation extracts the username from the standard HTTP Basic Authentication
 # (`Authorization: Basic ...`) request header. In case the `Authorization` header is not set,
 # a default username can be specified as follows:
-#auth:
-#  trust:
-#    http_default_user: dustin
+# auth:
+#  password:
+#    username: admin
+#    password: YWRtaW4=
 
 #///////////////////////// User Defined Functions ////////////////////////////
 

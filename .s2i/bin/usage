@@ -1,0 +1,7 @@
+#!/bin/bash -e
+
+# inform the user how to use the image
+cat <<EOF
+This is a apache druid sample builder image, to use it, visit:
+https://github.com/irfius/s2i-druid
+EOF

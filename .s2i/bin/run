@@ -1,0 +1,31 @@
+#!/bin/bash -e
+
+echo "---> RUNning conatiner... $cluster"
+
+case $cluster in
+    "usage")
+        echo "Usage!"
+        /usr/libexec/s2i/usage
+        exit 0
+        ;;
+    "data")
+        echo "Running cluster data"
+        exec /app/druid/bin/start-cluster-data-server
+        ;;
+    "query")
+        echo "Running cluster query"
+        exec /app/druid/bin/start-cluster-query-server
+        ;;
+    "master-no-zk")
+        echo "Running cluster master with NO zookeeper"
+        exec /app/druid/bin/start-cluster-master-no-zk-server
+        ;;
+    "master-with-zk")
+        echo "Running cluster master WITH zookeeper"
+        exec /app/druid/bin/start-cluster-master-with-zk-server
+        ;;
+    *)
+        echo "Running bash"
+        exec /bin/bash
+        ;;
+esac
