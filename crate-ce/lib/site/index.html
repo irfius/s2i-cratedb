@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>CrateDB Admin UI</title>
+    <meta name="description" content="CrateDB Admin UI">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <link rel="shortcut icon" href="static/assets/favicon.png">
+    <link rel="apple-touch-icon-precomposed" href="static/assets/apple-touch-icon-precomposed.png">
+    <link rel="apple-touch-icon" href="static/assets/apple-touch-icon.png">
+<link href="static/styles/app.css" rel="stylesheet"><script type="text/javascript" src="static/libs/runtime.bundle.js"></script><script type="text/javascript" src="static/libs/vendor.bundle.js"></script><script type="text/javascript" src="static/libs/app.bundle.js"></script><script type="text/javascript" src="static/libs/enterprise.bundle.js"></script></head>
+<body>
+    <!--[if lt IE 7]>
+      <p class="chromeframe">You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser today</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better experience this site.</p>
+    <![endif]-->
+
+    <div id="wrapper">
+      <div id="navigation-wrapper">
+        <div id="navigation-viewport" ng-include="'static/views/nav.html'"></div>
+      </div>
+      <div id="page-wrapper" ng-class="$root.showSideNav ? '' : 'page-wrapper--no-side-nav'">
+        <ui-view id="page-viewport" ></ui-view>
+      </div>
+    </div>
+
+</body>
+</html>
