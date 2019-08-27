@@ -33,18 +33,21 @@
 #network.host: _site_
 
 # Cluster discovery: Specify the hosts which will form the CrateDB cluster
-#discovery.seed_hosts:
-#    - host1
-#    - host2
+discovery.seed_hosts:
+   - crate1
+   - crate2
+   - crate3
+   - crate4
+   - crate5
 
 # Bootstrap the cluster using an initial set of master-eligible nodes. All
 # master-eligible nodes must be set here for new (or upgraded from CrateDB < 4.x)
 # production (non loop-back bound) clusters otherwise the cluster is not able to
 # initially vote an initial master node:
 #
-#cluster.initial_master_nodes:
-#    - host1
-#    - host2
+cluster.initial_master_nodes:
+   - crate0
+   - crate1
 
 
 ################################# Full Settings ##############################
@@ -392,9 +395,9 @@ auth:
 #
 # Unicast discovery allows to explicitly control which nodes will be used
 # to discover the cluster by pinging them.
-#discovery.seed_hosts:
-#  - host1:port
-#  - host2:port
+# discovery.seed_hosts:
+#  - crate1:4300
+#  - crate2:4300
 #
 # If you want to debug the discovery process, you can set a logger in
 # 'config/log4j2.properties' to help you doing so.
@@ -404,7 +407,7 @@ auth:
 # production (non loop-back bound) clusters otherwise the cluster is not able to
 # initially vote an initial master node:
 #
-#cluster.initial_master_nodes: ["host1", "host2"]
+# cluster.initial_master_nodes: ["host1", "host2"]
 
 #/////////////////////////// Discovery via DNS ///////////////////////////////
 

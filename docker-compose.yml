@@ -1,0 +1,42 @@
+version: "3"
+
+volumes:
+  crate_data: {}
+  crate_logs: {}
+
+services:
+  crate0:
+    image: irfius/s2i-crate:4.0.4
+    volumes:
+      - crate_data:/app/crate/data
+      - crate_logs:/app/crate/logs
+    ports: 
+      - "4300:4300"
+    environment:
+      - cluster=yes
+      - CRATE_HEAP_SIZE=1g
+  crate1:
+    image: irfius/s2i-crate:4.0.4
+    environment:
+      - cluster=yes
+      - CRATE_HEAP_SIZE=1g
+  crate2:
+    image: irfius/s2i-crate:4.0.4
+    environment:
+      - cluster=yes
+      - CRATE_HEAP_SIZE=1g
+  crate3:
+    image: irfius/s2i-crate:4.0.4
+    environment:
+      - cluster=yes
+      - CRATE_HEAP_SIZE=1g
+  crate4:
+    image: irfius/s2i-crate:4.0.4
+    environment:
+      - cluster=yes
+      - CRATE_HEAP_SIZE=1g
+  crate5:
+    image: irfius/s2i-crate:4.0.4
+    environment:
+      - cluster=yes
+      - CRATE_HEAP_SIZE=1g
