@@ -1,3 +1,4 @@
 .gradle
 crate-ce/data/*
 crate-ce/logs/*
+.DS_Store
