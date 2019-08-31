@@ -1,0 +1,18 @@
+version: "3"
+
+volumes:
+  data: {}
+  logs: {}
+  blobs: {}
+
+services:
+  crate:
+    image: irfius/s2i-cratedb:4.0.4
+    volumes:
+      - data:/app/cratedb/data/data
+      - logs:/app/cratedb/data/logs
+      - blobs:/app/cratedb/data/blobs
+    ports:
+      - "4200:4200"
+      - "4300:4300"
+      - "5432:5432"
