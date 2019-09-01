@@ -139,6 +139,7 @@ auth:
 # Cluster name identifies your cluster for auto-discovery. If you're running
 # multiple clusters on the same network, make sure you're using unique names.
 # cluster.name: crate
+cluster.name: ${CLUSTER_NAME}
 
 # The graceful_stop namespace defines settings for a graceful stop
 # procedure of nodes within the cluster.
@@ -166,7 +167,7 @@ auth:
 
 # Node names are generated dynamically on startup, so you're relieved
 # from configuring them manually. You can tie this node to a specific name:
-# node.name: "crate1"
+node.name: ${NODE_NAME}
 
 # Every node can be configured to allow or deny being eligible as the master,
 # and to allow or deny to store the data.
@@ -207,6 +208,7 @@ node.data: ${NODE_DATA}
 # By default, multiple nodes are not allowed to start from the same
 # installation location. To allow it, set the following to a higher value:
 #node.max_local_storage_nodes: 1
+node.max_local_storage_nodes: ${MAX_LOCAL_STORAGE_NODES}
 
 #################################### Paths ###################################
 
@@ -287,17 +289,18 @@ blobs.path: /app/cratedb/data/blobs
 
 # Set both 'bind_host' and 'publish_host':
 #network.host: 192.168.0.1
-network.host: _local_,_site_
+# network.host: _local_,_site_
+network.host: _site_,_local_
 
 # Set a custom port for the node to node communication (4300 by default):
-#transport.tcp.port: 4300
+transport.tcp.port: 4300
 
 # Enable compression for all communication between nodes (disabled by
 # default):
-#transport.tcp.compress: true
+transport.tcp.compress: true
 
 # Set a custom port to listen for HTTP traffic:
-#http.port: 4200
+http.port: 4200
 
 # Set a custom allowed content length:
 #http.max_content_length: 100mb
@@ -311,7 +314,7 @@ network.host: _local_,_site_
 # Defines the number of nodes that need to be started before any cluster
 # state recovery will start.
 #gateway.recover_after_nodes: 2
-
+gateway.recover_after_nodes: ${GATEWAY_RECOVER_AFTER_NODES}
 # Defines the time to wait before starting the recovery once the number
 # of nodes defined in gateway.recover_after_nodes are started.
 #gateway.recover_after_time: 5m
@@ -320,6 +323,7 @@ network.host: _local_,_site_
 # recovered immediately. The value should be equal to the number of nodes
 # in the cluster.
 #gateway.expected_nodes: 3
+gateway.expected_nodes: ${GATEWAY_EXPECTED_NODES}
 
 
 ############################ Recovery Throttling #############################
@@ -395,6 +399,7 @@ network.host: _local_,_site_
 #discovery.seed_hosts:
 #  - host1:port
 #  - host2:port
+discovery.seed_hosts: ${SEED_HOSTS_ARRAY}
 #
 # If you want to debug the discovery process, you can set a logger in
 # 'config/log4j2.properties' to help you doing so.
@@ -705,5 +710,5 @@ udc.enabled: false
 #
 # This allows you to connect to CrateDB using one of the many Postgres tools
 # and libraries
-psql.enabled: true
+psql.enabled: ${PSQL_ENABLED}
 psql.port: 5432

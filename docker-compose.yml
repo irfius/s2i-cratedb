@@ -6,7 +6,7 @@ volumes:
   blobs: {}
 
 services:
-  crate:
+  coordinator:
     image: irfius/s2i-cratedb:4.0.4
     volumes:
       - data:/app/cratedb/data/data
@@ -17,5 +17,48 @@ services:
       - "4300:4300"
       - "5432:5432"
     environment:
+      - CLUSTER_NAME=cluster-crate
+      - NODE_NAME=coordinator
+      - SEED_HOSTS_ARRAY=
+      - GATEWAY_EXPECTED_NODES=3
+      - GATEWAY_RECOVER_AFTER_NODES=3
+      - PSQL_ENABLED=true
       - NODE_MASTER=true
+      - NODE_DATA=false
+      - MAX_LOCAL_STORAGE_NODES=10
+  workhorse:
+    image: irfius/s2i-cratedb:4.0.4
+    volumes:
+      - data:/app/cratedb/data/data
+      - logs:/app/cratedb/data/logs
+      - blobs:/app/cratedb/data/blobs
+    environment:
+      - CLUSTER_NAME=cluster-crate
+      - NODE_NAME=workhorse
+      - SEED_HOSTS_ARRAY=coordinator:4300
+      - GATEWAY_EXPECTED_NODES=3
+      - GATEWAY_RECOVER_AFTER_NODES=3
+      - PSQL_ENABLED=false
+      - NODE_MASTER=false
       - NODE_DATA=true
+      - MAX_LOCAL_STORAGE_NODES=10
+    links:
+      - coordinator
+  balancer:
+    image: irfius/s2i-cratedb:4.0.4
+    volumes:
+      - data:/app/cratedb/data/data
+      - logs:/app/cratedb/data/logs
+      - blobs:/app/cratedb/data/blobs
+    environment:
+      - CLUSTER_NAME=cluster-crate
+      - NODE_NAME=balancer
+      - SEED_HOSTS_ARRAY=coordinator:4300
+      - GATEWAY_EXPECTED_NODES=3
+      - GATEWAY_RECOVER_AFTER_NODES=3
+      - PSQL_ENABLED=false
+      - NODE_MASTER=false
+      - NODE_DATA=true
+      - MAX_LOCAL_STORAGE_NODES=10
+    links:
+      - coordinator
