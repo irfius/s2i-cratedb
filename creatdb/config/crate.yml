@@ -671,7 +671,7 @@ network.host: _local_,_site_
 # `udc.url`. The sent usage data doesn't contain any confidential information.
 
 # enable/disable usage data collection at all
-#udc.enabled: true
+udc.enabled: false
 
 # The delay for first ping after start-up.
 #udc.initial_delay: 10m
