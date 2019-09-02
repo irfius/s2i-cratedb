@@ -1,0 +1,452 @@
+apiVersion: v1
+objects:
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      kompose.cmd: kompose convert -f docker-compose.yml --build build-config --provider=openshift
+        -o template.yml
+      kompose.version: 1.18.0 ()
+    creationTimestamp: null
+    labels:
+      io.kompose.service: coordinator
+    name: coordinator
+  spec:
+    ports:
+    - name: "4200"
+      port: 4200
+      targetPort: 4200
+    - name: "4300"
+      port: 4300
+      targetPort: 4300
+    - name: "5432"
+      port: 5432
+      targetPort: 5432
+    selector:
+      io.kompose.service: coordinator
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    annotations:
+      kompose.cmd: kompose convert -f docker-compose.yml --build build-config --provider=openshift
+        -o template.yml
+      kompose.version: 1.18.0 ()
+    creationTimestamp: null
+    labels:
+      io.kompose.service: balancer
+    name: balancer
+  spec:
+    replicas: 1
+    selector:
+      io.kompose.service: balancer
+    strategy:
+      resources: {}
+      type: Recreate
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          io.kompose.service: balancer
+      spec:
+        containers:
+        - env:
+          - name: CLUSTER_NAME
+            value: cluster-crate
+          - name: GATEWAY_EXPECTED_NODES
+            value: "3"
+          - name: GATEWAY_RECOVER_AFTER_NODES
+            value: "3"
+          - name: MAX_LOCAL_STORAGE_NODES
+            value: "10"
+          - name: NODE_DATA
+            value: "true"
+          - name: NODE_MASTER
+            value: "false"
+          - name: NODE_NAME
+            value: balancer
+          - name: PSQL_ENABLED
+            value: "false"
+          - name: SEED_HOSTS_ARRAY
+            value: coordinator:4300
+          image: ' '
+          name: balancer
+          resources: {}
+          volumeMounts:
+          - mountPath: /app/cratedb/data/data
+            name: data
+          - mountPath: /app/cratedb/data/logs
+            name: logs
+          - mountPath: /app/cratedb/data/blobs
+            name: blobs
+        restartPolicy: Always
+        volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: data
+        - name: logs
+          persistentVolumeClaim:
+            claimName: logs
+        - name: blobs
+          persistentVolumeClaim:
+            claimName: blobs
+    test: false
+    triggers:
+    - type: ConfigChange
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - balancer
+        from:
+          kind: ImageStreamTag
+          name: balancer:4.0.4
+      type: ImageChange
+  status: {}
+- apiVersion: v1
+  kind: ImageStream
+  metadata:
+    creationTimestamp: null
+    labels:
+      io.kompose.service: balancer
+    name: balancer
+  spec: 
+    dockerImageRepository: docker.io/irfius/s2i-cratedb
+    tags:
+      -
+        name: latest
+        annotations: null
+        from:
+          kind: DockerImage
+          name: 'docker.io/irfius/s2i-cratedb:4.0.4'
+        generation: 2
+        importPolicy: {  }
+  status:
+    dockerImageRepository: ""
+- apiVersion: v1
+  kind: PersistentVolumeClaim
+  metadata:
+    creationTimestamp: null
+    labels:
+      io.kompose.service: data
+    name: data
+  spec:
+    accessModes:
+    - ReadWriteOnce
+    resources:
+      requests:
+        storage: 100Mi
+  status: {}
+- apiVersion: v1
+  kind: PersistentVolumeClaim
+  metadata:
+    creationTimestamp: null
+    labels:
+      io.kompose.service: logs
+    name: logs
+  spec:
+    accessModes:
+    - ReadWriteOnce
+    resources:
+      requests:
+        storage: 100Mi
+  status: {}
+- apiVersion: v1
+  kind: PersistentVolumeClaim
+  metadata:
+    creationTimestamp: null
+    labels:
+      io.kompose.service: blobs
+    name: blobs
+  spec:
+    accessModes:
+    - ReadWriteOnce
+    resources:
+      requests:
+        storage: 100Mi
+  status: {}
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    annotations:
+      kompose.cmd: kompose convert -f docker-compose.yml --build build-config --provider=openshift
+        -o template.yml
+      kompose.version: 1.18.0 ()
+    creationTimestamp: null
+    labels:
+      io.kompose.service: coordinator
+    name: coordinator
+  spec:
+    replicas: 1
+    selector:
+      io.kompose.service: coordinator
+    strategy:
+      resources: {}
+      type: Recreate
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          io.kompose.service: coordinator
+      spec:
+        containers:
+        - env:
+          - name: CLUSTER_NAME
+            value: cluster-crate
+          - name: GATEWAY_EXPECTED_NODES
+            value: "3"
+          - name: GATEWAY_RECOVER_AFTER_NODES
+            value: "3"
+          - name: MAX_LOCAL_STORAGE_NODES
+            value: "10"
+          - name: NODE_DATA
+            value: "false"
+          - name: NODE_MASTER
+            value: "true"
+          - name: NODE_NAME
+            value: coordinator
+          - name: PSQL_ENABLED
+            value: "true"
+          - name: SEED_HOSTS_ARRAY
+          image: ' '
+          name: coordinator
+          ports:
+          - containerPort: 4200
+          - containerPort: 4300
+          - containerPort: 5432
+          resources: {}
+          volumeMounts:
+          - mountPath: /app/cratedb/data/data
+            name: data
+          - mountPath: /app/cratedb/data/logs
+            name: logs
+          - mountPath: /app/cratedb/data/blobs
+            name: blobs
+        restartPolicy: Always
+        volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: data
+        - name: logs
+          persistentVolumeClaim:
+            claimName: logs
+        - name: blobs
+          persistentVolumeClaim:
+            claimName: blobs
+    test: false
+    triggers:
+    - type: ConfigChange
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - coordinator
+        from:
+          kind: ImageStreamTag
+          name: coordinator:4.0.4
+      type: ImageChange
+  status: {}
+- apiVersion: v1
+  kind: ImageStream
+  metadata:
+    creationTimestamp: null
+    labels:
+      io.kompose.service: coordinator
+    name: coordinator
+  spec: 
+    dockerImageRepository: docker.io/irfius/s2i-cratedb
+    tags:
+      -
+        name: latest
+        annotations: null
+        from:
+          kind: DockerImage
+          name: 'docker.io/irfius/s2i-cratedb:4.0.4'
+        generation: 2
+        importPolicy: {  }
+  status:
+    dockerImageRepository: ""
+- apiVersion: v1
+  kind: PersistentVolumeClaim
+  metadata:
+    creationTimestamp: null
+    labels:
+      io.kompose.service: data
+    name: data
+  spec:
+    accessModes:
+    - ReadWriteOnce
+    resources:
+      requests:
+        storage: 100Mi
+  status: {}
+- apiVersion: v1
+  kind: PersistentVolumeClaim
+  metadata:
+    creationTimestamp: null
+    labels:
+      io.kompose.service: logs
+    name: logs
+  spec:
+    accessModes:
+    - ReadWriteOnce
+    resources:
+      requests:
+        storage: 100Mi
+  status: {}
+- apiVersion: v1
+  kind: PersistentVolumeClaim
+  metadata:
+    creationTimestamp: null
+    labels:
+      io.kompose.service: blobs
+    name: blobs
+  spec:
+    accessModes:
+    - ReadWriteOnce
+    resources:
+      requests:
+        storage: 100Mi
+  status: {}
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    annotations:
+      kompose.cmd: kompose convert -f docker-compose.yml --build build-config --provider=openshift
+        -o template.yml
+      kompose.version: 1.18.0 ()
+    creationTimestamp: null
+    labels:
+      io.kompose.service: workhorse
+    name: workhorse
+  spec:
+    replicas: 1
+    selector:
+      io.kompose.service: workhorse
+    strategy:
+      resources: {}
+      type: Recreate
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          io.kompose.service: workhorse
+      spec:
+        containers:
+        - env:
+          - name: CLUSTER_NAME
+            value: cluster-crate
+          - name: GATEWAY_EXPECTED_NODES
+            value: "3"
+          - name: GATEWAY_RECOVER_AFTER_NODES
+            value: "3"
+          - name: MAX_LOCAL_STORAGE_NODES
+            value: "10"
+          - name: NODE_DATA
+            value: "true"
+          - name: NODE_MASTER
+            value: "false"
+          - name: NODE_NAME
+            value: workhorse
+          - name: PSQL_ENABLED
+            value: "false"
+          - name: SEED_HOSTS_ARRAY
+            value: coordinator:4300
+          image: ' '
+          name: workhorse
+          resources: {}
+          volumeMounts:
+          - mountPath: /app/cratedb/data/data
+            name: data
+          - mountPath: /app/cratedb/data/logs
+            name: logs
+          - mountPath: /app/cratedb/data/blobs
+            name: blobs
+        restartPolicy: Always
+        volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: data
+        - name: logs
+          persistentVolumeClaim:
+            claimName: logs
+        - name: blobs
+          persistentVolumeClaim:
+            claimName: blobs
+    test: false
+    triggers:
+    - type: ConfigChange
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - workhorse
+        from:
+          kind: ImageStreamTag
+          name: workhorse:4.0.4
+      type: ImageChange
+  status: {}
+- apiVersion: v1
+  kind: ImageStream
+  metadata:
+    creationTimestamp: null
+    labels:
+      io.kompose.service: workhorse
+    name: workhorse
+  spec: 
+    dockerImageRepository: docker.io/irfius/s2i-cratedb
+    tags:
+      -
+        name: latest
+        annotations: null
+        from:
+          kind: DockerImage
+          name: 'docker.io/irfius/s2i-cratedb:4.0.4'
+        generation: 2
+        importPolicy: {  }
+  status:
+    dockerImageRepository: ""
+- apiVersion: v1
+  kind: PersistentVolumeClaim
+  metadata:
+    creationTimestamp: null
+    labels:
+      io.kompose.service: data
+    name: data
+  spec:
+    accessModes:
+    - ReadWriteOnce
+    resources:
+      requests:
+        storage: 100Mi
+  status: {}
+- apiVersion: v1
+  kind: PersistentVolumeClaim
+  metadata:
+    creationTimestamp: null
+    labels:
+      io.kompose.service: logs
+    name: logs
+  spec:
+    accessModes:
+    - ReadWriteOnce
+    resources:
+      requests:
+        storage: 100Mi
+  status: {}
+- apiVersion: v1
+  kind: PersistentVolumeClaim
+  metadata:
+    creationTimestamp: null
+    labels:
+      io.kompose.service: blobs
+    name: blobs
+  spec:
+    accessModes:
+    - ReadWriteOnce
+    resources:
+      requests:
+        storage: 100Mi
+  status: {}
+kind: Template
+metadata: 
+  name: cratedb-4.0.4
+

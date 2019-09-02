@@ -11,7 +11,8 @@ ENV CRATEDB_VERSION=4.0.4 \
     LC_ALL=en_US.UTF-8 \
     LANG=en_US.UTF-8 \
     PATH="/app/cratedb/bin:$PATH" \
-    CRATE_HEAP_SIZE=512M \
+    CRATE_JAVA_OPTS="-Xss500k -XX:+UnlockExperimentalVMOptions -Des.cgroups.hierarchy.override=/ " \
+    CRATE_HEAP_SIZE=2g \
     CRATE_GC_LOG_DIR=/app/cratedb/data/logs \
     CRATE_HEAP_DUMP_PATH=/app/cratedb/data/data
 
