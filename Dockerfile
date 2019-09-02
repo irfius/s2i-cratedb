@@ -31,7 +31,7 @@ RUN rpm --import /etc/pki/rpm-gpg/* && \
     chown -R 1001:1001 /app && \
     touch /etc/sysctl.conf && \
     echo "vm.max_map_count=262144" >> /etc/sysctl.conf && \
-    chmod -R 1001:1001 /etc/sysctl.conf
+    chown -R 1001:1001 /etc/sysctl.conf
 
 USER 1001
 EXPOSE 4200 4300 5432
