@@ -28,7 +28,10 @@ RUN rpm --import /etc/pki/rpm-gpg/* && \
     mkdir -p cratedb/data/logs && \
     mkdir -p cratedb/data/data && \
     mkdir -p cratedb/data/blobs && \
-    chown -R 1001:1001 /app
+    chown -R 1001:1001 /app && \
+    touch /etc/sysctl.conf && \
+    echo "vm.max_map_count=262144" >> /etc/sysctl.conf && \
+    chmod -R 1001:1001 /etc/sysctl.conf
 
 USER 1001
 EXPOSE 4200 4300 5432
